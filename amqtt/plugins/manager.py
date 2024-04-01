@@ -4,13 +4,14 @@
 
 __all__ = ["get_plugin_manager", "BaseContext", "PluginManager"]
 
-import pkg_resources
-import logging
 import asyncio
 import copy
-
+import logging
 from collections import namedtuple
-
+try:
+    from importlib.metadata import EntryPoint, entry_points
+except ModuleNotFoundError:
+    from importlib_metadata import EntryPoint, entry_points
 
 Plugin = namedtuple("Plugin", ["name", "ep", "object"])
 
@@ -59,24 +60,19 @@ class PluginManager:
 
     def _load_plugins(self, namespace):
         self.logger.debug("Loading plugins for namespace %s" % namespace)
-        for ep in pkg_resources.iter_entry_points(group=namespace):
+        for ep in entry_points(group=namespace):
             plugin = self._load_plugin(ep)
             self._plugins.append(plugin)
             self.logger.debug(" Plugin %s ready" % ep.name)
 
-    def _load_plugin(self, ep: pkg_resources.EntryPoint):
-        try:
-            self.logger.debug(" Loading plugin %s" % ep)
-            plugin = ep.load(require=True)
-            self.logger.debug(" Initializing plugin %s" % ep)
-            plugin_context = copy.copy(self.app_context)
-            plugin_context.logger = self.logger.getChild(ep.name)
-            obj = plugin(plugin_context)
-            return Plugin(ep.name, ep, obj)
-        except ImportError as ie:
-            self.logger.warning(f"Plugin {ep!r} import failed: {ie}")
-        except pkg_resources.UnknownExtra as ue:
-            self.logger.warning(f"Plugin {ep!r} dependencies resolution failed: {ue}")
+    def _load_plugin(self, ep: EntryPoint):
+        self.logger.debug(" Loading plugin %s" % str(ep))
+        plugin = ep.load()
+        self.logger.debug(" Initializing plugin %s" % str(ep))
+        plugin_context = copy.copy(self.app_context)
+        plugin_context.logger = self.logger.getChild(ep.name)
+        obj = plugin(plugin_context)
+        return Plugin(ep.name, ep, obj)
 
     def get_plugin(self, name):
         """
