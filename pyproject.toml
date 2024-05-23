@@ -19,30 +19,32 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-transitions = "^0.8.0"
+python = ">=3.8,<3.13"
+transitions = "^0.9.1"
 websockets = ">=9.0,<11.0"
-importlib-metadata = { version = "^6.5.0", python = "<3.8" }
 passlib = "^1.7.0"
 docopt = "^0.6.0"
 PyYAML = ">=5.4.0,<7.0"
-coveralls = {version = "^3.0.1", optional = true}
+coveralls = {version = "^4.0.1", optional = true}
 
 [tool.poetry.extras]
 ci = ["coveralls"]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.2"
+pytest = "^8.2.1"
 pytest-cov = "^2.11.1"
 pytest-asyncio = "^0.14.0"
-asyncmock = "^0.4.0"
-mypy = "^1.3.0"
-pylint = "^2.7.2"
-black = "^21.10b0"
-flake8 = "^3.9.0"
-hypothesis = "^6.10.0"
+asyncmock = "^0.4.2"
+mypy = "^1.10.0"
+black = "^24.4.2"
+ruff = "^0.4.5"
+hypothesis = "^6.102.5"
 pytest-logdog = "^0.1.0"
-psutil = "^5.9.0"
+psutil = "^5.9.8"
+setuptools = "~=70.0.0"
+types-docopt = "^0.6.11.4"
+types-psutil = "^5.9.5"
+types-passlib = "^1.7.7"
 
 [tool.poetry.scripts]
 amqtt = 'amqtt.scripts.broker_script:main'
