@@ -1,24 +1,22 @@
 # Copyright (c) 2015 Nicolas JOUANIN
 #
 # See the file license.txt for copying permission.
-import unittest
 import asyncio
 import logging
 import random
-from amqtt.plugins.manager import PluginManager
-from amqtt.session import (
-    Session,
-    OutgoingApplicationMessage,
-    IncomingApplicationMessage,
-)
-from amqtt.mqtt.protocol.handler import ProtocolHandler
-from amqtt.adapters import StreamWriterAdapter, StreamReaderAdapter
+import unittest
+
+from amqtt.adapters import StreamReaderAdapter, StreamWriterAdapter
 from amqtt.mqtt.constants import QOS_0, QOS_1, QOS_2
-from amqtt.mqtt.publish import PublishPacket
+from amqtt.mqtt.protocol.handler import ProtocolHandler
 from amqtt.mqtt.puback import PubackPacket
+from amqtt.mqtt.pubcomp import PubcompPacket
+from amqtt.mqtt.publish import PublishPacket
 from amqtt.mqtt.pubrec import PubrecPacket
 from amqtt.mqtt.pubrel import PubrelPacket
-from amqtt.mqtt.pubcomp import PubcompPacket
+from amqtt.plugins.manager import PluginManager
+from amqtt.session import (IncomingApplicationMessage,
+                           OutgoingApplicationMessage, Session)
 
 formatter = (
     "[%(asctime)s] %(name)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
