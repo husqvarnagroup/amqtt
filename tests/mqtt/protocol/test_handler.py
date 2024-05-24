@@ -71,7 +71,6 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
 
@@ -112,7 +111,6 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
 
@@ -160,7 +158,6 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
 
@@ -213,7 +210,6 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
 
@@ -250,7 +246,6 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
 
@@ -295,7 +290,6 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
 
@@ -344,7 +338,6 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
 
@@ -410,7 +403,6 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
 
@@ -459,6 +451,5 @@ class ProtocolHandlerTest(unittest.TestCase):
         server = self.loop.run_until_complete(coro)
         self.loop.run_until_complete(test_coro())
         server.close()
-        self.loop.run_until_complete(server.wait_closed())
         if future.exception():
             raise future.exception()
