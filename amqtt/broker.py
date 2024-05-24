@@ -106,7 +106,6 @@ class Server:
     async def close_instance(self):
         if self.instance:
             self.instance.close()
-            await self.instance.wait_closed()
 
 
 class BrokerContext(BaseContext):
