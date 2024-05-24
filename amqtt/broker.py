@@ -1,32 +1,28 @@
 # Copyright (c) 2015 Nicolas JOUANIN
 #
 # See the file license.txt for copying permission.
-from typing import Optional
-import logging
-import ssl
-import websockets
 import asyncio
+import logging
 import re
+import ssl
 from asyncio import CancelledError, futures
 from collections import deque
 from enum import Enum
-
 from functools import partial
-from transitions import Machine, MachineError
-from amqtt.session import Session
-from amqtt.mqtt.protocol.broker_handler import BrokerProtocolHandler
-from amqtt.errors import AMQTTException, MQTTException, NoDataException
-from amqtt.utils import format_client_message, gen_client_id
-from amqtt.adapters import (
-    StreamReaderAdapter,
-    StreamWriterAdapter,
-    ReaderAdapter,
-    WriterAdapter,
-    WebSocketsReader,
-    WebSocketsWriter,
-)
-from .plugins.manager import PluginManager, BaseContext
+from typing import Optional
 
+import websockets
+from transitions import Machine, MachineError
+
+from amqtt.adapters import (ReaderAdapter, StreamReaderAdapter,
+                            StreamWriterAdapter, WebSocketsReader,
+                            WebSocketsWriter, WriterAdapter)
+from amqtt.errors import AMQTTException, MQTTException, NoDataException
+from amqtt.mqtt.protocol.broker_handler import BrokerProtocolHandler
+from amqtt.session import Session
+from amqtt.utils import format_client_message, gen_client_id
+
+from .plugins.manager import BaseContext, PluginManager
 
 _defaults = {
     "timeout-disconnect-delay": 2,
@@ -121,7 +117,7 @@ class BrokerContext(BaseContext):
 
     def __init__(self, broker: "Broker") -> None:
         super().__init__()
-        self.config = None
+        self.config: dict | None = None
         self._broker_instance = broker
 
     async def broadcast_message(self, topic, data, qos=None):
@@ -165,7 +161,7 @@ class Broker:
         "stopped",
     ]
 
-    def __init__(self, config=None, loop=None, plugin_namespace=None):
+    def __init__(self, config: dict | None = None, loop: asyncio.AbstractEventLoop | None = None, plugin_namespace: str | None = None):
         self.logger = logging.getLogger(__name__)
         self.config = _defaults
         if config is not None:
@@ -177,15 +173,15 @@ class Broker:
         else:
             self._loop = asyncio.get_event_loop()
 
-        self._servers = dict()
+        self._servers: dict[str, Server] = {}
         self._init_states()
-        self._sessions = dict()
-        self._subscriptions = dict()
-        self._retained_messages = dict()
-        self._broadcast_queue = asyncio.Queue()
+        self._sessions: dict[str, tuple[Session, BrokerProtocolHandler]] = {}
+        self._subscriptions: dict[str, list[tuple]] = {}
+        self._retained_messages: dict[str, RetainedApplicationMessage] = {}
+        self._broadcast_queue: asyncio.Queue = asyncio.Queue()
 
-        self._broadcast_task = None
-        self._broadcast_shutdown_waiter = futures.Future()
+        self._broadcast_task: asyncio.Task | None = None
+        self._broadcast_shutdown_waiter: futures.Future = futures.Future(loop=self._loop)
 
         # Init plugins manager
         context = BrokerContext(self)
@@ -206,7 +202,7 @@ class Broker:
                 config.update(listeners_config[listener])
                 self.listeners_config[listener] = config
         except KeyError as ke:
-            raise BrokerException("Listener config not found invalid: %s" % ke)
+            raise BrokerException(f"Listener config not found invalid: {ke}")
 
     def _init_states(self) -> None:
         self.transitions = Machine(states=Broker.states, initial="new")
@@ -347,7 +343,7 @@ class Broker:
             self.transitions.starting_fail()
             raise BrokerException("Broker instance can't be started: %s" % e)
 
-    async def shutdown(self):
+    async def shutdown(self) -> None:
         """
         Stop broker instance.
 
@@ -368,10 +364,10 @@ class Broker:
 
         await self._shutdown_broadcast_loop()
 
-        for listener_name in self._servers:
-            server = self._servers[listener_name]
-            await server.close_instance()
         self.logger.debug("Broker closing")
+        for listener_name, server in self._servers.items():
+            self.logger.info(f"Closing broker instance {listener_name}")
+            await server.close_instance()
         self.logger.info("Broker closed")
         await self.plugins_manager.fire_event(EVENT_BROKER_POST_SHUTDOWN)
         self.transitions.stopping_success()
@@ -699,8 +695,8 @@ class Broker:
         :param listener:
         :return:
         """
-        auth_plugins = None
-        auth_config = self.config.get("auth", None)
+        auth_plugins: dict | None = None
+        auth_config: dict | None = self.config.get("auth", None)
         if auth_config:
             auth_plugins = auth_config.get("plugins", None)
         returns = await self.plugins_manager.map_plugin_coro(
@@ -737,7 +733,7 @@ class Broker:
         """
         topic_result = True
         topic_plugins = None
-        topic_config = self.config.get("topic-check", None)
+        topic_config: dict | None = self.config.get("topic-check", None)
         # if enabled is not specified, all plugins will be used for topic filtering (backward compatibility)
         if topic_config and "enabled" in topic_config:
             if topic_config.get("enabled", False):
@@ -858,7 +854,7 @@ class Broker:
         :param session:
         :return:
         """
-        filter_queue = deque()
+        filter_queue: deque = deque()
         for topic in self._subscriptions:
             if self._del_subscription(topic, session):
                 filter_queue.append(topic)

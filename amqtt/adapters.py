@@ -2,14 +2,15 @@
 #
 # See the file license.txt for copying permission.
 
+import abc
 import io
-from websockets import WebSocketCommonProtocol
-from websockets import ConnectionClosed
-from asyncio import StreamReader, StreamWriter
 import logging
+from asyncio import StreamReader, StreamWriter
+
+from websockets import ConnectionClosed, WebSocketCommonProtocol
 
 
-class ReaderAdapter:
+class ReaderAdapter(abc.ABC):
     """
     Base class for all network protocol reader adapter.
 
@@ -17,6 +18,7 @@ class ReaderAdapter:
     protocol used
     """
 
+    @abc.abstractmethod
     async def read(self, n=-1) -> bytes:
         """
         Read up to n bytes. If n is not provided, or set to -1, read until EOF and
@@ -24,6 +26,7 @@ class ReaderAdapter:
         empty, return an empty bytes object. :return: packet read as bytes data
         """
 
+    @abc.abstractmethod
     def feed_eof(self):
         """
         Acknowledge EOF

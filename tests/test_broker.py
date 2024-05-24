@@ -5,37 +5,26 @@ import asyncio
 import logging
 import socket
 import sys
-from unittest.mock import call, MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 import psutil
 import pytest
 
 from amqtt.adapters import StreamReaderAdapter, StreamWriterAdapter
-from amqtt.broker import (
-    EVENT_BROKER_PRE_START,
-    EVENT_BROKER_POST_START,
-    EVENT_BROKER_PRE_SHUTDOWN,
-    EVENT_BROKER_POST_SHUTDOWN,
-    EVENT_BROKER_CLIENT_CONNECTED,
-    EVENT_BROKER_CLIENT_DISCONNECTED,
-    EVENT_BROKER_CLIENT_SUBSCRIBED,
-    EVENT_BROKER_CLIENT_UNSUBSCRIBED,
-    EVENT_BROKER_MESSAGE_RECEIVED,
-)
-from amqtt.client import MQTTClient, ConnectException
-from amqtt.mqtt import (
-    ConnectPacket,
-    ConnackPacket,
-    PublishPacket,
-    PubrecPacket,
-    PubrelPacket,
-    PubcompPacket,
-    DisconnectPacket,
-)
-from amqtt.mqtt.connect import ConnectVariableHeader, ConnectPayload
+from amqtt.broker import (EVENT_BROKER_CLIENT_CONNECTED,
+                          EVENT_BROKER_CLIENT_DISCONNECTED,
+                          EVENT_BROKER_CLIENT_SUBSCRIBED,
+                          EVENT_BROKER_CLIENT_UNSUBSCRIBED,
+                          EVENT_BROKER_MESSAGE_RECEIVED,
+                          EVENT_BROKER_POST_SHUTDOWN, EVENT_BROKER_POST_START,
+                          EVENT_BROKER_PRE_SHUTDOWN, EVENT_BROKER_PRE_START)
+from amqtt.client import ConnectException, MQTTClient
+from amqtt.mqtt import (ConnackPacket, ConnectPacket, DisconnectPacket,
+                        PubcompPacket, PublishPacket, PubrecPacket,
+                        PubrelPacket)
+from amqtt.mqtt.connect import ConnectPayload, ConnectVariableHeader
 from amqtt.mqtt.constants import QOS_0, QOS_1, QOS_2
 from amqtt.mqtt.protocol.broker_handler import BrokerProtocolHandler
-
 
 formatter = (
     "[%(asctime)s] %(name)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
