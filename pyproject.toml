@@ -19,7 +19,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.13"
+python = ">=3.10,<3.13"
 transitions = "^0.9.1"
 websockets = ">=9.0,<11.0"
 passlib = "^1.7.0"
