@@ -26,7 +26,6 @@ class ReaderAdapter(abc.ABC):
         empty, return an empty bytes object. :return: packet read as bytes data
         """
 
-    @abc.abstractmethod
     def feed_eof(self):
         """
         Acknowledge EOF
